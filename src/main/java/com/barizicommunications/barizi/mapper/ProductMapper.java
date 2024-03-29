@@ -15,6 +15,8 @@ public class ProductMapper {
                 .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
+                .currentStock(product.getCurrentStock())
+                .minimumStockLevel(product.getMinimumStockLevel())
                 .build();
     };
 
