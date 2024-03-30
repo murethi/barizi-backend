@@ -11,7 +11,7 @@ import java.util.UUID;
 @RequestMapping("/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
-    private InventoryService inventoryService;
+    private final InventoryService inventoryService;
 
     @PutMapping("{id}")
     public ProductResponse update(@PathVariable UUID id,@RequestParam int quantity){
