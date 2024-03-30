@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class InventoryEventsListener{
+    /**
+     * this event will trigger on stock removed
+     * @param event StockRemovedEvent
+     */
     @EventListener
     @Async
     public void onStockRemovedEvent(StockRemovedEvent event) {
