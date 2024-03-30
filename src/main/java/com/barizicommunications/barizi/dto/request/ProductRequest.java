@@ -6,5 +6,5 @@ import lombok.Builder;
 /**
  * Object holds request data related to product
  */
-public record ProductRequest(String name, String description) {
+public record ProductRequest(String name, String description,int minimumStockLevel) {
 }
