@@ -28,13 +28,33 @@ public class ProductService {
         productRepository.save(product);
     }
 
+    /**
+     * checks if product with given id exists
+     * if yes, updates the name and description
+     * if not throws an exception
+     * @param productRequest dto object
+     * @param id pk on db
+     */
     public void update(ProductRequest productRequest, UUID id) {
         productRepository.findById(id).ifPresentOrElse(product -> {
             product.setName(productRequest.name());
             product.setName(productRequest.description());
             productRepository.save(product);
         },()->{
-            throw new EntityNotFoundException("Product not founf");
+            throw new EntityNotFoundException("Product not found");
         });
+    }
+
+    /**
+     * check if product exists by id
+     * if yes maps product to dto and returns rresult
+     * if no throws exception
+     * @param id unique identifier (pk on db)
+     * @return ProductResponse
+     */
+    public ProductResponse findOne(UUID id) {
+        return productRepository.findById(id)
+                .map(productMapper.toDto)
+                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
     }
 }
