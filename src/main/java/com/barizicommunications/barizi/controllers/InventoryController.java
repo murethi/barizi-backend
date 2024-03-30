@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/products")
+@RequestMapping("/inventory")
 @RequiredArgsConstructor
 public class InventoryController {
     private InventoryService inventoryService;
