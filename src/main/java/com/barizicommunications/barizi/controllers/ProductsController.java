@@ -41,4 +41,10 @@ public class ProductsController {
     public void update(@RequestBody ProductRequest productRequest, @PathVariable UUID id){
         productService.update(productRequest,id);
     }
+
+    @GetMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public ProductResponse view(@PathVariable UUID id){
+       return productService.findOne(id);
+    }
 }
