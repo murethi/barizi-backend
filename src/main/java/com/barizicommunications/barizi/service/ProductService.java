@@ -6,7 +6,9 @@ import com.barizicommunications.barizi.mapper.ProductMapper;
 import com.barizicommunications.barizi.models.Product;
 import com.barizicommunications.barizi.repositories.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -37,8 +39,7 @@ public class ProductService {
      */
     public void update(ProductRequest productRequest, UUID id) {
         productRepository.findById(id).ifPresentOrElse(product -> {
-            product.setName(productRequest.name());
-            product.setName(productRequest.description());
+            BeanUtils.copyProperties(productRequest,product);
             productRepository.save(product);
         },()->{
             throw new EntityNotFoundException("Product not found");
@@ -54,6 +55,52 @@ public class ProductService {
      */
     public ProductResponse findOne(UUID id) {
         return productRepository.findById(id)
+                .map(productMapper.toDto)
+                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+    }
+
+    /**
+     * Transactional annotation has been used in order to ensure that only
+     * one instance updates the balance account at a time to avoid lost updates.
+     *
+     * The first map will update our stock
+     * The second map will convert the new product object to dto
+     *
+     * @param id pk
+     * @param quantity amount to be debited
+     * @return ProductResponse
+     */
+    @Transactional
+    public ProductResponse removeStock(UUID id, int quantity) {
+        return productRepository.findById(id)
+                .filter(product -> product.getCurrentStock()>=quantity)
+                .map(product -> {
+                    int currentStock = product.getCurrentStock();
+                    product.setCurrentStock(currentStock+quantity);
+                    return productRepository.save(product);
+                })
+                .map(productMapper.toDto)
+                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+    }
+    /**
+     * Transactional annotation has been used in order to ensure that only
+     * one instance updates the balance account at a time to avoid lost updates.
+     *
+     * The first map will update our stock
+     * The second map will convert the new product object to dto
+     *
+     * @param id pk
+     * @param quantity amount to be credited
+     * @return ProductResponse
+     */
+    @Transactional
+    public ProductResponse addStock(UUID id, int quantity) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    int currentStock = product.getCurrentStock();
+                    product.setCurrentStock(currentStock+quantity);
+                    return productRepository.save(product);
+                })
                 .map(productMapper.toDto)
                 .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
     }
