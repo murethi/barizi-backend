@@ -35,7 +35,7 @@ class ProductMapperTest {
                 .minimumStockLevel(50)
                 .build();
 
-        ProductResponse actual = productMapper.toDto.apply(product);
+        ProductResponse actual = productMapper.toDto(product);
 
         assertEquals(actual.currentStock(),expected.currentStock());
         assertEquals(actual.minimumStockLevel(),expected.minimumStockLevel());
@@ -61,7 +61,7 @@ class ProductMapperTest {
                 .minimumStockLevel(50)
                 .build();
 
-        Product actual = productMapper.toEntity.apply(request);
+        Product actual = productMapper.toEntity(request);
 
         assertEquals(actual.getMinimumStockLevel(),expected.getMinimumStockLevel());
         assertEquals(actual.getName(),expected.getName());
