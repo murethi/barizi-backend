@@ -2,10 +2,10 @@ package com.barizicommunications.barizi.service;
 
 import com.barizicommunications.barizi.dto.request.ProductRequest;
 import com.barizicommunications.barizi.dto.response.ProductResponse;
+import com.barizicommunications.barizi.exceptions.NotFoundException;
 import com.barizicommunications.barizi.mapper.ProductMapper;
 import com.barizicommunications.barizi.models.Product;
 import com.barizicommunications.barizi.repositories.ProductRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -42,7 +42,7 @@ public class ProductService {
             BeanUtils.copyProperties(productRequest,product);
             productRepository.save(product);
         },()->{
-            throw new EntityNotFoundException("Product not found");
+            throw new NotFoundException("Product not found");
         });
     }
 
@@ -56,7 +56,7 @@ public class ProductService {
     public ProductResponse findOne(UUID id) {
         return productRepository.findById(id)
                 .map(productMapper.toDto)
-                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
 
     /**
@@ -72,15 +72,16 @@ public class ProductService {
      */
     @Transactional
     public ProductResponse removeStock(UUID id, int quantity) {
+
         return productRepository.findById(id)
-                .filter(product -> product.getCurrentStock()>=quantity)
+                .filter(product -> product.getCurrentStock()>=Math.abs(quantity))
                 .map(product -> {
                     int currentStock = product.getCurrentStock();
                     product.setCurrentStock(currentStock+quantity);
                     return productRepository.save(product);
                 })
                 .map(productMapper.toDto)
-                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
     /**
      * Transactional annotation has been used in order to ensure that only
@@ -102,6 +103,6 @@ public class ProductService {
                     return productRepository.save(product);
                 })
                 .map(productMapper.toDto)
-                .orElseThrow(()-> new EntityNotFoundException("Product Not Found"));
+                .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
 }
