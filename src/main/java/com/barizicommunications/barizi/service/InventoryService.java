@@ -4,7 +4,6 @@ import com.barizicommunications.barizi.dto.response.ProductResponse;
 import com.barizicommunications.barizi.events.StockRemovedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
