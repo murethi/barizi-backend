@@ -2,6 +2,7 @@ package com.barizicommunications.barizi.service;
 
 import com.barizicommunications.barizi.dto.request.ProductRequest;
 import com.barizicommunications.barizi.dto.response.ProductResponse;
+import com.barizicommunications.barizi.exceptions.InvalidQuantityException;
 import com.barizicommunications.barizi.exceptions.NotFoundException;
 import com.barizicommunications.barizi.mapper.ProductMapper;
 import com.barizicommunications.barizi.models.Product;
@@ -21,12 +22,11 @@ public class ProductService {
     private final ProductMapper productMapper;
 
     public List<ProductResponse> findAll(){
-        return productRepository.findAll().stream().map(productMapper.toDto).toList();
+        return productRepository.findAll().stream().map(productMapper::toDto).toList();
     }
 
     public void create(ProductRequest productRequest) {
-        Product product = productMapper.toEntity.apply(productRequest);
-
+        Product product = productMapper.toEntity(productRequest);
         productRepository.save(product);
     }
 
@@ -55,7 +55,7 @@ public class ProductService {
      */
     public ProductResponse findOne(UUID id) {
         return productRepository.findById(id)
-                .map(productMapper.toDto)
+                .map(productMapper::toDto)
                 .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
 
@@ -72,7 +72,9 @@ public class ProductService {
      */
     @Transactional
     public ProductResponse removeStock(UUID id, int quantity) {
-
+        if(quantity>=0){
+            throw new InvalidQuantityException("To remove from stock, quantity must be less than zero (0)");
+        }
         return productRepository.findById(id)
                 .filter(product -> product.getCurrentStock()>=Math.abs(quantity))
                 .map(product -> {
@@ -80,7 +82,7 @@ public class ProductService {
                     product.setCurrentStock(currentStock+quantity);
                     return productRepository.save(product);
                 })
-                .map(productMapper.toDto)
+                .map(productMapper::toDto)
                 .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
     /**
@@ -96,13 +98,16 @@ public class ProductService {
      */
     @Transactional
     public ProductResponse addStock(UUID id, int quantity) {
+        if(quantity<=0){
+            throw new InvalidQuantityException("To remove from stock, quantity must be greater than zero (0)");
+        }
         return productRepository.findById(id)
                 .map(product -> {
                     int currentStock = product.getCurrentStock();
                     product.setCurrentStock(currentStock+quantity);
                     return productRepository.save(product);
                 })
-                .map(productMapper.toDto)
+                .map(productMapper::toDto)
                 .orElseThrow(()-> new NotFoundException("Product Not Found"));
     }
 }
