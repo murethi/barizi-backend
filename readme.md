@@ -1,4 +1,4 @@
-# springboot-sample-app
+# Barizi Communications Code Test
 
 
 ## Requirements
