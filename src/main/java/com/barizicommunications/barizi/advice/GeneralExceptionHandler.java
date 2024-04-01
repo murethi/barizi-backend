@@ -1,6 +1,7 @@
 package com.barizicommunications.barizi.advice;
 
 import com.barizicommunications.barizi.dto.response.ExceptionResponse;
+import com.barizicommunications.barizi.exceptions.InvalidQuantityException;
 import com.barizicommunications.barizi.exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,15 @@ public class GeneralExceptionHandler {
         return ExceptionResponse.builder()
                 .message(exception.getMessage())
                 .status(HttpStatus.NOT_FOUND)
+                .build();
+    }
+
+    @ExceptionHandler(value = InvalidQuantityException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    protected ExceptionResponse handleInvalidQuantity(HttpServletRequest req, InvalidQuantityException exception) {
+        return ExceptionResponse.builder()
+                .message(exception.getMessage())
+                .status(HttpStatus.BAD_REQUEST)
                 .build();
     }
 }
