@@ -82,7 +82,7 @@ class ProductsControllerTest {
     }
 
     @Test
-    void create_will_throw_403_if_not_logged_in() throws Exception {
+    void create_will_throw_401_if_not_logged_in() throws Exception {
         ProductRequest productRequest = ProductRequest.builder()
                 .name("Java Coffee 500g")
                 .description("Best coffee in Kenya")
@@ -117,7 +117,7 @@ class ProductsControllerTest {
     }
 
     @Test
-    void update_will_throw_403_if_not_logged_in() throws Exception {
+    void update_will_throw_401_if_not_logged_in() throws Exception {
         UUID productId = UUID.randomUUID();
         ProductRequest productRequest = ProductRequest.builder()
                 .name("Java Coffee 500g")
